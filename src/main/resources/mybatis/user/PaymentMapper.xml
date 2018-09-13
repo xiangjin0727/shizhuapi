@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.order.dao.PaymentDao">
+	<!-- 保存看房信息 S0039 -->
+  	<insert id="saveSmartView" parameterType="Map">
+  		<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="smart_view_id">
+			SELECT LAST_INSERT_ID() AS smart_view_id
+		</selectKey>
+		INSERT INTO sz_smart_view(smart_view_user_id,smart_view_room_info_id,smart_view_time,smart_view_status)
+		VALUE(#{user_id},#{smart_view_room_info_id},#{smart_view_time},1)
+	</insert>
+
+ 	<!-- 保存看房订单 S0039 -->
+ 	<insert id="saveSmartViewOrder" parameterType="Map">
+	 INSERT INTO sz_smart_view_order(smart_view_order_user_id,smart_view_order_code,smart_view_order_time,smart_view_order_status,smart_view_id,smart_view_order_price)
+	 VALUE(#{user_id},#{order_code},now(),1,#{smart_view_id},#{smart_view_order_price})
+	</insert>
+	<!-- 修改看房订单 S0040 -->
+	<update id="updateSmartViewOrder"  parameterType="Map">
+		UPDATE sz_smart_view_order SET smart_view_order_status=#{status} WHERE smart_view_order_code=#{smart_view_order_code} AND smart_view_order_price = #{amount}
+	</update>
+	<select id="searchSmartViewOrder" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_smart_view_order,sz_smart_view WHERE sz_smart_view_order.smart_view_id = sz_smart_view.smart_view_id AND smart_view_status=1 AND smart_view_order_status=0 AND smart_view_order_user_id=#{user_id}
+	</select>
+	<!-- 查询房间信息 S0040 -->
+	<select id="searchHouse" parameterType="Map" resultType="Map">
+		SELECT house_name,house_keeper,smart_view_time FROM `sz_smart_view_order`,`sz_smart_view`,`sz_room_info`,`sz_house`
+		WHERE sz_smart_view_order.smart_view_id=sz_smart_view.`smart_view_id`
+		AND sz_smart_view.`smart_view_room_info_id` = sz_room_info.`room_info_id`
+		AND sz_room_info.`room_info_house_id` = sz_house.`house_id` 
+		AND smart_view_order_code=#{smart_view_order_code}
+	</select>
+		<!-- 立即签约 S0041  -->
+  	<insert id="contractImmediatelyLoad" parameterType="Map">
+		INSERT INTO sz_understand_sign(understand_sign_user_id,understand_sign_room_info_id,understand_sign_info,understand_sign_time,
+		understand_sign_maturity_time,understand_sign_order_code,understand_sign_order_price,understand_sign_service_charge,understand_sign_deposit,
+		understand_sign_pay_type,understand_sign_redeem_id)
+		VALUE(#{user_id},#{understand_sign_room_info_id},'',#{understand_sign_time},#{understand_sign_maturity_time},#{order_code},#{first_payment},#{service_charge_amount},#{deposit_amount},#{pay_type},#{understand_sign_redeem_id})
+	</insert>
+		<!-- 立即签约 S0042  支付 -->
+	<update id="contractImmediatelyPay"  parameterType="Map">
+		UPDATE sz_understand_sign SET understand_sign_status=2 WHERE understand_sign_order_code=#{understand_sign_order_code} AND understand_sign_status=0
+	</update>
+			<!-- 支付账单金额 S0057 -->
+	<update id="doPaymentOfBill"  parameterType="Map">
+		UPDATE sz_user_bill_info SET user_bill_method=0 ,user_bill_pay_type=#{user_bill_pay_type},user_bill_pay_date=NOW() WHERE user_bill_num=#{user_bill_num} AND user_bill_id=#{user_bill_id}
+	</update>
+			<!-- 增加账户流水  -->
+  	<insert id="createUserBillFlow" parameterType="Map">
+		INSERT INTO sz_user_bill_flow(user_bill_flow_type,user_id,user_bill_flow_time,user_bill_flow_info,user_bill_flow_money,user_bill_flow_pay,user_bill_flow_no)
+		VALUE(#{user_bill_flow_type},#{user_id},now(),#{user_bill_flow_info},#{user_bill_pay_num},#{user_bill_pay_type},#{user_bill_id})
+	</insert>
+	
+		<!-- 查询付款方式S0065 -->
+	<select id="getPaymentMethodList" resultType="Map">
+		SELECT payment_method_id,payment_method_name,payment_method_deposit,payment_method_service FROM `sz_payment_method` WHERE STATUS=0
+	</select>
+			<!-- 查询信用分S0065 -->
+	<select id="getUserCore" parameterType="Map" resultType="Map">
+		SELECT user_xinyong_score FROM `sz_user` WHERE user_id=#{user_id}
+	</select>
+			<!-- 查询房费S0065 -->
+	<select id="gethosePirce" parameterType="Map" resultType="Map">
+		SELECT room_info_price FROM `sz_room_info` WHERE room_info_id=#{room_info_id}
+	</select>
+	
+	<insert id="createBillList" parameterType="java.util.List">	
+	INSERT INTO sz_user_bill_info(user_id,user_bill_type,user_bill_info,user_bill_method,user_bill_pay_day,user_bill_pay_num,user_bill_pay_type,user_bill_pay_code,user_bill_num,user_bill_cycle,user_ht_id,user_bill_code)
+	VALUES
+	<foreach collection="list" item="item" index="index" separator=",">
+	(#{item.user_id},#{item.user_bill_type},#{item.user_bill_info},#{item.user_bill_method},#{item.user_bill_pay_day},#{item.user_bill_pay_num},#{item.user_bill_pay_type},#{item.user_bill_pay_code},#{item.user_bill_num},#{item.user_bill_cycle},#{item.user_ht_id},#{item.user_bill_code})
+	</foreach>
+	</insert>
+	
+	
+	<!-- 查询签约订单信息 -->
+	<select id="getUnderstandSign" parameterType="Map" resultType="Map">		
+		SELECT *,FORMAT(DATEDIFF(understand_sign_maturity_time,understand_sign_time)/30/sz_payment_method.month,0) AS timeLong 
+		FROM sz_understand_sign,sz_payment_method WHERE sz_understand_sign.`understand_sign_pay_type` =sz_payment_method.`payment_method_id` AND  understand_sign_order_code=#{understand_sign_order_code}
+	</select>
+	
+	<!-- 修改用户押金金额 -->
+	<update id="updateUserYaJin"  parameterType="Map">
+		UPDATE `sz_user` SET user_yajin_amount = user_yajin_amount+#{amount} where user_id=#{user_id}
+	</update>
+		
+	<!-- 查询用户失信次数 -->
+	<select id="searchshixinNum" parameterType="Map" resultType="Map">		
+		SELECT * FROM sz_smart_view,sz_smart_view_order 
+		WHERE sz_smart_view_order.smart_view_id = sz_smart_view.smart_view_id AND smart_view_status=1 AND smart_view_order_status=0
+		AND smart_view_time&lt;NOW() AND smart_view_user_id=#{user_id}
+	</select>
+		<!-- 查询订单相关信息（合同使用） -->
+	<select id="searchOrderDetail" parameterType="Map" resultType="Map">		
+		SELECT  house_code,room_info_id,house_name,user_real_name,user_id_card,user_mob,user_emergency_contact_mobile,room_info_price,understand_sign_deposit,understand_sign_service_charge,user_id,understand_sign_maturity_time
+		FROM `sz_user`,`sz_understand_sign`,`sz_room_info`,`sz_house`
+		
+		WHERE sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id`
+		AND sz_room_info.`room_info_house_id` = sz_house.`house_id`
+		AND sz_user.`user_id` = sz_understand_sign.`understand_sign_user_id`
+		AND understand_sign_order_code = #{understand_sign_order_code} 
+	</select>
+	<!-- 添加合同相关信息 -->
+	<insert id="createContractInformation" parameterType="Map">
+	  	<selectKey resultType="java.lang.Long" order="AFTER" keyProperty="ht_id">
+			SELECT LAST_INSERT_ID() AS ht_id
+		</selectKey>
+	
+	INSERT  INTO `sz_ht`(`ht_date`,`ht_time`,`house_code`,`room_id`,`address`,`name`,`card`,`mobile`,`contact_number`,`money`,`pay`,`deposit`,`service_fee`,`lease_period`,`u_id`,`maturity_time`) 
+	VALUES (NOW(),NOW(),#{house_code},#{room_info_id},#{house_name},#{user_real_name},#{user_id_card},#{user_mob},#{user_emergency_contact_mobile},#{room_info_price},#{payment_operation_way},#{understand_sign_deposit},#{understand_sign_service_charge},#{nums},#{user_id},#{understand_sign_maturity_time});
+	
+	</insert>
+	<!-- 修改用户优惠券的状态 -->
+	<update id="updateUserRedeem" parameterType="Map">
+		UPDATE sz_user_redeem SET user_redeem_status = 1 WHERE user_redeem_id = #{understand_sign_redeem_id}	
+	</update>
+	
+	<select id="judgeRedeemStatus" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_user_redeem WHERE user_redeem_id=#{understand_sign_redeem_id}
+	</select>
+	
+		<!-- 修改房间状态 -->
+	<update id="updateRoomStatus" parameterType="Map">
+		UPDATE `sz_room_info` SET room_info_type=3 WHERE room_info_id = #{understand_sign_room_info_id}
+	</update>
+	
+		<!-- 增加支付单 -->
+  	<insert id="createPaymentOperation" parameterType="Map">				
+		INSERT INTO sz_payment_operation(payment_operation_user_id,payment_operation_order_code,payment_operation_way,payment_operation_type,payment_operation_pay_way,trade_no,status,create_time,payment_amount)
+		VALUE(#{user_id},#{payment_operation_order_code},#{payment_operation_way},#{payment_operation_type},#{payment_operation_pay_way},#{trade_no},#{status},NOW(),#{payment_amount})
+	</insert>
+			<!-- 修改支付单 -->
+	<update id="updatePaymentOperation" parameterType="Map">		
+		UPDATE sz_payment_operation SET payment_operation_info=#{payment_operation_info} ,STATUS = #{status} WHERE payment_operation_id=#{payment_operation_id}
+	</update>
+	<!-- 查询 待查寻支付订单 -->
+	<select id="searchPaymentOperation" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_payment_operation WHERE STATUS=2
+	</select>
+	
+		<!-- 查询 待查寻支付订单 -->
+	<select id="searchUserBillInfo" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_user_bill_info WHERE user_bill_id=#{user_bill_id} and user_bill_method=1
+	</select>
+	
+		<!-- 查询 待查寻支付订单 -->
+	<select id="searchPaymentOperationByuser" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_payment_operation WHERE payment_operation_user_id = #{user_id} AND payment_operation_pay_way=0 AND payment_operation_type=0 AND STATUS=0
+	</select>
+	
+		<!-- 查询 待查寻支付订单 -->
+	<select id="searchPaymentOperationByuser_" parameterType="Map" resultType="Map">			
+		SELECT * FROM sz_payment_operation WHERE STATUS=2 AND payment_operation_order_code= #{payment_operation_order_code} and payment_operation_way=#{payment_operation_way} 
+		ORDER BY create_time DESC
+	</select>
+	
+		<!-- 查询看房订单 -->
+	<select id="searchSmart_view_order" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_smart_view_order WHERE smart_view_order_code=#{payment_operation_order_code}
+		
+	</select>
+			<!-- 查询看房订单 -->
+	<select id="searchBill" parameterType="Map" resultType="Map">	
+		SELECT * FROM sz_user_bill_info WHERE user_bill_code=#{payment_operation_order_code}		
+	</select>
+	
+	<!-- 查看用户是否可约看当前房源 -->
+	<select id="iskanfang" parameterType="Map" resultType="Map">
+	
+		SELECT * FROM `sz_smart_view`,`sz_smart_view_order`
+		WHERE 
+		sz_smart_view_order.smart_view_id = sz_smart_view.`smart_view_id`
+		AND 
+		smart_view_order_status = 0
+		AND smart_view_status = 1
+		AND smart_view_room_info_id=#{smart_view_room_info_id} AND smart_view_time=#{smart_view_time} 
+	</select>
+	<!-- 根据看房订单编号 查询看房订单 -->
+	<select id="searchViewOrder" parameterType="Map" resultType="Map">
+			SELECT * FROM `sz_smart_view`,`sz_smart_view_order`
+		WHERE 
+		sz_smart_view_order.smart_view_id = sz_smart_view.`smart_view_id`
+		AND 
+		smart_view_order_code = #{smart_view_order_code}
+	</select>
+	<!-- 查询签约订单是否存在 -->
+	<select id="searchOrder" parameterType="Map" resultType="Map">
+		SELECT * FROM sz_understand_sign WHERE understand_sign_order_code=#{understand_sign_order_code} AND understand_sign_status=0
+	</select>
+</mapper>

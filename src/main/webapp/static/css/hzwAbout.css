@@ -1,0 +1,39 @@
+@charset "utf-8";
+/*初始化*/
+body {font-family:"微软雅黑"; font-size:120%; background:#fff; word-break:break-all; color:#8c8c8c; }
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,blockquote,p{padding:0; margin:0;}
+h1, h2, h3, h4, h5, h6 {font-size:100%}
+em, i {font-style:normal}
+li{list-style-type:none;}
+table{ margin:0 auto; border-collapse:collapse;border-spacing:0}
+.clearfix:after {display:block; content:''; clear:both; visibility:hidden}
+.none {display:none}
+.clear{ clear:both;}
+.margin-center {margin:0 auto; text-align:center}
+article,aside,footer,header,hgroup,nav,section,figure,figcaption {display:block; }
+a {color:#6e6b6b;text-decoration:none;}
+a:hover {color:#138f7c;}
+input, img {vertical-align:middle; border:0; }
+.lL{ float:left;}
+.rR{ float:right;}
+/*开始*/
+.hzwCC{width: 100%; margin: 0 auto}
+.hzwTopBg{ width: 100%;  background:url(../images/hzwCCBg.gif) no-repeat center bottom; background-size: contain;  padding-bottom:200px}
+.hzwTop{ width: 90%; margin: 20px auto;}
+.hzwTop h1{line-height: 60px; margin: 20px 0; font-size: 200%; color: #ff7c0d}
+.hzwTop h2{ line-height: 60px; color: #666; margin: 20px 0; font-size: 120%; font-weight: normal}
+.hzwTop p{ line-height: 40px;}
+.hzwTop p em{ font-size: 1em; color: #ff7c0d}
+.hzwAboutBg{ width: 100%; background: #f9e8bb; padding: 50px 0}
+.hzwAbout{ width: 90%; margin: 0px auto; background:#fff; box-shadow: 3px 5px 20px #999; padding-top: 30px;}
+.hzwAboutTitle{ width: 80%; height: 100px;  line-height: 100px; margin:0 auto; background: url("../images/hzwCCTitle.gif") no-repeat center center; background-size:contain; font-size:100%; color: #fff; text-align: center;}
+.hzwAboutPCC{margin: 30px auto 50px; width: 80%; padding-bottom: 50px}
+.hzwAboutP{ border-left: 2px solid #dbdbdb; line-height: 40px; padding-bottom: 50px; padding-left: 30px; position: relative}
+.hzwAboutP i{ position: absolute; top:11px; left: -10px; width: 20px; height: 20px; background:#ff7c0d; border-radius: 50% }
+.hzwAboutP span{ display: block; width: 2px; height:30px; position: absolute; top:0px; left: -2px; background:#fff;}
+.hzwAboutP em{ color: #ff7c0d}
+.hzwAboutPH{ font-size: 120%;}
+.hzwCCXy{ width:95%; margin:0 auto}
+.hzwCCXy h1{font-size:120%; line-height:60px; text-align:center}
+.hzwCCXy p{ line-height:40px; text-indent:2em}
+.hzwCCXy h2{ line-height:80px; font-size:110%}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html class=" js-no-overflow-scrolling">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="target-densitydpi=320,width=750,user-scalable=no">
+<meta content="telephone=no" name="format-detection" />
+<title>月报</title>
+<link rel="stylesheet" type="text/css" href="css/H5FullscreenPage.css">
+<link rel="stylesheet" type="text/css" href="css/page-animation.css">
+<link rel="stylesheet" href="css/index.css"/>
+<script type="text/javascript" src="js/H5FullscreenPage.js"></script>
+<script type="text/javascript" src="js/echarts.common.min.js"></script>
+<script type="text/javascript" src="js/echarts.min.js"></script>
+<script src="./js/zepto.js"></script>
+</head>
+<body class="H5FullscreenPage">
+    <div class="H5FullscreenPage-wrap">
+        <div class="item item1">
+            <div class="part part1 fadeIn" data-delay="500">
+                <div class="part part-small rotateIn">
+                    <div class="circle"></div>
+                </div>
+
+            </div>
+            <div class="part part2 fadeIn">
+            </div>
+            <div class="part"></div>
+        </div>
+        <div class="item item2">
+            <div class="part part1 slideRight" data-delay="500" style="background-position: 28% 0%">稳健运营时长</div>
+            <div class="part part2 slideLeft">
+                <p>自汇中网</p>
+                <p>2015年10月份上线以来平台已稳健运营</p>
+            </div>
+            <div class="part part3 zoomIn" id="thenceThen"></div>
+        </div>
+        <div class="item item4">
+            <div class="part part1 heartBeat">出借用户排行榜</div>
+            <div class="part part3">
+                <p>羡慕榜上有名？</p>
+                <p>不如赶紧注册出借，相信下一个独占鳌头的就是您！</p>
+            </div>
+            <!--<div class="part part1 heartBeat"></div>-->
+            <div class="part part2">
+                <div class="marBor">
+                    <div class="padBor">
+                        <table class="detailCon" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+                            <tr>
+                                <th>累计出借排名</th>
+                                <th>用户名</th>
+                                <th>月度累计出借金额（元）</th>
+                                <th>年度累计出借金额（元）</th>
+                            </tr>
+                            <tr>
+                                <td>第1名</td>
+                                <td>139****7397</td>
+                                <td>12,320,000</td>
+                                <td>21,920,000</td>
+                            </tr>
+                            <tr>
+                                <td>第2名</td>
+                                <td>138****3382</td>
+                                <td>10,000,000</td>
+                                <td>17,000,000</td>
+                            </tr>
+                            <tr>
+                                <td>第3名</td>
+                                <td>138****5928</td>
+                                <td>7,000,000</td>
+                                <td>11,000,000</td>
+                            </tr>
+                            <tr>
+                                <td>第4名</td>
+                                <td>138****0139</td>
+                                <td>6,025,000</td>
+                                <td>20,245,300</td>
+                            </tr>
+                            <tr>
+                                <td>第5名</td>
+                                <td>138****7849</td>
+                                <td>6,000,000</td>
+                                <td>9,250,000</td>
+                            </tr>
+                            <tr>
+                                <td>第6名</td>
+                                <td>sjf****666</td>
+                                <td>5,900,000</td>
+                                <td>17,800,000</td>
+                            </tr>
+                            <tr>
+                                <td>第7名</td>
+                                <td>135****3211</td>
+                                <td>4,000,000</td>
+                                <td>7,100,000</td>
+                            </tr>
+                            <tr>
+                                <td>第8名</td>
+                                <td>139****3206</td>
+                                <td>3,700,000</td>
+                                <td>11,701,000</td>
+                            </tr>
+                            <tr>
+                                <td>第9名</td>
+                                <td>135****3658</td>
+                                <td>3,600,000</td>
+                                <td>5,600,000</td>
+                            </tr>
+                            <tr>
+                                <td>第10名</td>
+                                <td>WU****WEI</td>
+                                <td>3,270,000</td>
+                                <td>10,070,000</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="item item5">
+            <div class="part part1 rollInRight" style="background-position: 22% 0%">用户出借标的分布</div>
+            <div class="part part2 rollInLeft"></div>
+            <div class="part part3 rotateIn"></div>
+        </div>
+        <div class="item item6">
+            <div class="part part1 rollInRight" style="background-position: 22% 0%">用户行为数据统计</div>
+            <div class="part part2 rollInRight parallax">
+                <p>2016年12月，9,058个智慧的</p>
+                <p>出借人加入了汇中网，9,503个用户在</p>
+                <p>汇中网成功出借，7,783人成功解决了借款需求</p>
+            </div>
+            <div class="userFenbu">
+                <div class="part fadeIn parallax">
+                    <div class="userPic first"></div>
+                    <p class="one">9,058<em>人</em></p>
+                    <p class="two">新增注册用户数</p>
+                </div>
+                <div class="part fadeIn parallax">
+                    <div class="userPic second"></div>
+                    <p class="one">7,783<em>人</em></p>
+                    <p class="two">借款用户数</p>
+                </div>
+                <div class="part fadeIn parallax">
+                    <div class="userPic third"></div>
+                    <p class="one">9,503<em>人</em></p>
+                    <p class="two">出借用户数</p>
+                </div>
+            </div>
+        </div>
+        <div class="item item7">
+            <div class="part part1 rotateIn">出借用户分布<em>top5</em></div>
+            <div class="part part2 rotateIn">
+                <div class="city num1">
+                    <p>江苏</p>
+                    <p>155,740,100<i>元</i></p>
+                </div>
+                <div class="city num2">
+                    <p>山东</p>
+                    <p>146,723,900<i>元</i></p>
+                </div>
+                <div class="city num3">
+                    <p>甘肃</p>
+                    <p>125,919,900<i>元</i></p>
+                </div>
+                <div class="city num4">
+                    <p>福建</p>
+                    <p>109,980,000<i>元</i></p>
+                </div>
+                <div class="city num5">
+                    <p>浙江</p>
+                    <p>70,832,700<i>元</i></p>
+                </div>
+            </div>
+            <div class="map part rotateIn">
+
+            </div>
+        </div>
+        <div class="item item8">
+            <div class="part part1 slideLeft">出借用户分析</div>
+            <div class="part itemCont slideUp" id="main" style="width: 750px;height:220px;">
+            </div>
+            <div class="bgPerson">
+            </div>
+            <div class="dataDetail part zoomIn">
+                <ul>
+                    <li>
+                        <em>90后</em>
+                        <div class="progress">
+                            <i>9.34%</i>
+                        </div>
+                    </li>
+                    <li>
+                        <em>80后</em>
+                        <div class="progress">
+                            <i>23.74%</i>
+                        </div>
+                    </li>
+                    <li>
+                        <em>70后</em>
+                        <div class="progress">
+                            <i>19.98%</i>
+                        </div>
+                    </li>
+                    <li>
+                        <em>60后</em>
+                        <div class="progress">
+                            <i>22.34%</i>
+                        </div>
+                    </li>
+                    <li>
+                        <em>50后</em>
+                        <div class="progress">
+                            <i>24.61%</i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="item item9">
+            <div class="part part2 slideUp">
+                <img src="./images/part9-erweima1.png" alt=""/>
+            </div>
+            <div class="part part3 slideDown">
+                <h3>APP下载</h3>
+                <p><span>普惠大众</span><span>财富中华</span></p>
+                <div class="link">
+                </div>
+                <a class="shareFriends" id="share" href="http://a.app.qq.com/o/simple.jsp?pkgname=com.huizhongcf.webloan">立即下载</a>
+            </div>
+        </div>
+    </div>
+    <script src="./js/details.js"></script>
+
+</body>
+</html>

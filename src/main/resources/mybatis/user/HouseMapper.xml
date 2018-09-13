@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.house.dao.HouseDao">
+   <!-- 获取房源列表 S0033 -->
+    <select id="searchHouseList"  resultType="Map" parameterType="Map">
+ 		 SELECT		
+		 	house_id,
+		 	room_info_id,
+		 	house_url,
+			room_info_price,
+			room_info_size,
+			sz_house.house_name,
+			house_latitude_longitude,
+			house_partner,
+			house_label
+			
+			FROM sz_house,sz_room_info,sz_live_root
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND
+			house_live_root_id = sz_live_root.`live_root_id`			
+			 
+			<if test="room_info_type==1">
+			AND
+				room_info_type = 0
+			</if>
+			<if test="room_info_type==2">
+			AND
+				room_info_type = 0
+			</if>
+			<if test="room_info_type==3">
+			AND
+				room_info_type = 1
+			</if>
+			<if test="house_rent_type==1">			
+			AND house_rent_type = 1				
+			</if>
+			<if test="house_rent_type==2">			
+			AND house_rent_type = 1	 and live_root_num	=2			
+			</if>
+			<if test="house_rent_type==3">			
+			AND house_rent_type = 1	 and live_root_num	=3			
+			</if>
+			<if test="house_rent_type==4">			
+			AND house_rent_type = 1	 and live_root_num	=4			
+			</if>
+			<if test="house_rent_type==5">			
+			AND house_rent_type = 0				
+			</if>
+			<if test="house_rent_type==6">			
+			AND house_rent_type = 0	 and live_root_num =1				
+			</if>
+			<if test="house_rent_type==7">			
+			AND house_rent_type = 0	 and live_root_num	=2			
+			</if>
+			<if test="house_rent_type==8">			
+			AND house_rent_type = 0	 and live_root_num	=3			
+			</if>
+			<if test="keyword!=null and keyword!=''">
+				AND
+				house_name LIKE CONCAT('%',#{keyword},'%') 
+			</if>
+			<if test="sort_type==2">
+				ORDER BY room_info_price asc
+			</if>
+			<if test="sort_type==3">
+				ORDER BY room_info_price desc
+			</if>
+
+    </select>
+    <!-- 房间配置图  S0034 -->
+   <select id="getRootSet" resultType="Map" parameterType="Map">
+		 SELECT room_set_url FROM sz_root_set WHERE room_set_status=0 AND room_set_house_id = #{house_id}
+   </select>
+   <!-- 房源缩略图  S0034 -->
+   <select id="getHouseThumbnail" resultType="Map" parameterType="Map">
+		SELECT house_thumbnail_url,house_thumbnail_remark FROM sz_house_thumbnail WHERE house_thumbnail_status=0 AND house_thumbnail_house_id = #{house_id}
+   </select>
+   <!-- 管家列表  S0034 -->
+   <select id="getHouseKeeper" resultType="Map" parameterType="Map">
+		SELECT house_keeper_name,house_keeper_url,house_keeper_mob,house_keeper_remark,house_keeper_level FROM sz_house_keeper WHERE house_keeper_status=0 AND  house_keeper_id=#{house_keeper_id}
+   </select>
+   <!-- 房源详情  S0034 -->
+   <select id="getHouseInfo" resultType="Map" parameterType="Map">
+		SELECT house_id,room_info_id,house_partner,house_name,house_url, house_latitude_longitude, SUBSTRING_INDEX(house_latitude_longitude,',',1)AS latitude ,SUBSTRING_INDEX(house_latitude_longitude,',',-1) AS longitude ,
+		room_info_price,room_info_size,room_info_name,room_info_check_time,house_keeper,house_rent_type,house_code
+		FROM `sz_house`,sz_room_info
+		WHERE  house_id = room_info_house_id
+		AND room_info_id = #{room_info_id}
+   </select>
+   <!-- 是否收藏过 S0034 -->
+   <select id="isCollection" resultType="String" parameterType="Map">
+	
+   		SELECT user_collection_id FROM sz_user_collection WHERE user_collection_room_info_id=#{room_info_id} AND user_collection_user_id=#{user_id}
+   </select>
+   <!-- 房源下房间情况  S0034 -->
+   <select id="getPeopleInRoom" resultType="Map" parameterType="Map">
+		SELECT room_info_price,room_info_name,room_info_id,IF(room_info_type=3,'1',0) AS STATUS,user_id_card
+		FROM sz_room_info,sz_understand_sign,sz_user
+		WHERE 
+		understand_sign_room_info_id = room_info_id
+		AND
+		user_id = understand_sign_user_id
+		AND
+		understand_sign_status=2
+		AND
+		room_info_house_id = #{house_id}
+  </select>
+    <!-- 获取看房违约记录  S0050 -->
+   <select id="getHouseDefaultRecords" resultType="Map" parameterType="Map">  
+		SELECT smart_view_room_info_id,house_url,house_name,DATE_FORMAT(smart_view_time,'%Y-%m-%d %H:%i:%S') as smart_view_time,'未到' AS detail 
+		FROM `sz_house`,`sz_smart_view_order`,`sz_smart_view`,`sz_room_info`
+		WHERE smart_view_room_info_id = room_info_id AND room_info_house_id = house_id
+		AND sz_smart_view.smart_view_id = sz_smart_view_order.smart_view_id
+		AND smart_view_order_status=0 AND smart_view_user_id=#{user_id}
+		AND smart_view_time&lt;NOW()
+  </select>
+  <!-- 房源详情，取消收藏房源 S0060 -->
+  <insert id="doCollectionOfHouses" parameterType="Map">
+    INSERT INTO sz_user_collection(user_collection_user_id,user_collection_room_info_id,user_collection_time)
+	VALUE(#{user_id},#{user_collection_room_info_id},now())
+  </insert>
+  <!-- 房源详情，取消收藏房源 S0060 -->
+  <delete id="doCancelCollectionOfHouses" parameterType="Map">
+  	DELETE FROM sz_user_collection WHERE user_collection_user_id = #{user_id} and user_collection_room_info_id=#{user_collection_room_info_id}
+  </delete>
+  <!-- 取消自主看房（取消约看）  S0061 -->
+  <update id="doCancelSeeHouse"  parameterType="Map">
+  	UPDATE sz_smart_view SET smart_view_status=3 WHERE smart_view_id=#{smart_view_id}
+  </update>
+
+  <select id="getAvailableTime" parameterType="Map" resultType="String">
+    SELECT DATE_FORMAT(smart_view_time,'%H:%i') FROM sz_smart_view ,sz_smart_view_order
+	WHERE sz_smart_view_order.`smart_view_id` = sz_smart_view.`smart_view_id` 
+	AND smart_view_status = 1 AND (smart_view_order_status=0||smart_view_order_status=2)
+	AND smart_view_room_info_id=#{smart_view_room_info_id} AND DATE_FORMAT(smart_view_time,'%Y-%m-%d')=#{time}
+  
+  </select>
+  <!-- 获取租住违约记录  S0051 -->
+    <select id="getRecordOfBreachOfContract" parameterType="Map" resultType="Map">
+	    SELECT room_info_id,house_url,house_name,remark,FORMAT(DATEDIFF(understand_sign_maturity_time,understand_sign_time)/30,0) AS contract_time FROM sz_com,`sz_room_info`,`sz_house`,`sz_understand_sign`
+		WHERE understand_sign_room_info_id = sz_room_info.`room_info_id`
+		AND sz_understand_sign.understand_sign_id = sz_com.understand_sign_id
+		AND sz_house.`house_id` = sz_room_info.`room_info_house_id`
+		AND sz_com.`user_id` = #{user_id}  
+  </select>
+  
+  <select id="getBanner" parameterType="Map" resultType="Map">
+    SELECT banner_url,banner_type FROM sz_banner WHERE banner_status=0  
+  </select>
+    <!-- 完成看房接口 S0067 -->
+  <update id="finishTheHouse"  parameterType="Map">
+  	UPDATE sz_smart_view  SET smart_view_status = 0 WHERE smart_view_user_id = #{user_id} AND smart_view_room_info_id=#{smart_view_room_info_id}
+  </update>
+</mapper>

@@ -1,0 +1,29 @@
+@charset "utf-8";
+/* CSS Document */
+body,div,ol,ul,h1,h2,h3,h4,h5,h6,p,th,td,dl,dd,form,iframe,input,textarea,select,label,article,aside,footer,header,menu,nav,section,time,audio,video {margin:0; padding:0;}
+article,aside,footer,header,nav,section,audio,canvas,video,img {display: block;}
+body {font-size: 20px; color: #000000; background: #fff; font-family:'Microsoft YaHei';  -webkit-text-size-adjust: 100%;  -ms-text-size-adjust: 100%; -webkit-tap-highlight-color:rgba(0,0,0,0); position: relative }
+textarea { resize: none;}
+iframe,img { border:0;}
+ul,ol { list-style:none;}
+input,select,textarea {outline: 0; -webkit-user-modify: read-write-plaintext-only;}
+input {/* -webkit-appearance: none; */border: 0}
+a{text-decoration: none;}
+html{font-size: 100px;}
+.lL{float: left}
+.rR{float: right}
+.clear{clear: both}
+.content{ width:100%;}
+.hide{ display:none;}
+input[placeholder], [placeholder], *[placeholder] {
+   color:#000;
+}
+
+.HIndex{ margin:0 auto; max-width:6.4rem; min-width:3.2rem; background:#fff;}
+.HIndex img{ width:100%;}
+
+
+
+
+
+

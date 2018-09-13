@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.user.dao.UserMyInformationDao">
+ 
+ 	<!-- 我的收藏  S0008 -->
+    <select id="myCollection_01"  resultType="Map" parameterType="Map">
+  		 SELECT		
+		 	house_id,
+		 	room_info_id,
+		 	house_url,
+			room_info_price,
+			room_info_size,
+			sz_house.house_name,
+			house_latitude_longitude,
+			house_partner,
+			house_label,
+			user_collection_time
+			
+			FROM sz_house,sz_room_info,sz_user_collection
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND 
+			sz_user_collection.`user_collection_room_info_id`= sz_room_info.`room_info_id`
+			AND 
+			user_collection_user_id = #{user_id}
+			AND
+			house_rent_type = #{house_type} order by user_collection_time desc
+
+    </select>
+    <!-- 我的收藏  S0008 -->
+   <select id="myCollection_02"  resultType="String" parameterType="Map">
+	SELECT house_thumbnail_url FROM sz_house_thumbnail WHERE house_thumbnail_status=0 AND house_thumbnail_house_id  =#{house_id}
+   </select>
+    <!-- 我的收藏  S0008 -->
+   <select id="myCollection_03"  resultType="Map" parameterType="String">
+	SELECT label_name,label_color FROM sz_label WHERE label_status=0 AND label_id=#{label_id}
+   </select>
+   <!-- 我的收藏  S0008 -->
+   <select id="myCollection_04"  resultType="Map" parameterType="String">
+	SELECT house_partner_name,house_partner_color,house_partner_logo_url FROM sz_house_partner WHERE house_partner_status=0 AND house_partner_id=#{house_partner_id}
+
+   </select>
+   
+   
+   
+   
+   
+   
+   <!-- 我的约看  S0009 -->
+     <select id="myAppointment"  resultType="Map" parameterType="Map">
+   
+   		 SELECT		
+		 	house_id,
+			room_info_price,
+			room_info_size,
+			room_info_id,
+		 	house_url,
+			sz_house.house_name,
+			DATE_FORMAT(smart_view_time,'%Y-%m-%d %H:%i:%S') as smart_view_time,
+			room_info_name AS address,
+			house_keeper,
+			sz_user.`user_real_name`,
+			sz_user.`user_img`,
+			sz_smart_view.smart_view_id as smart_view_id
+			
+			FROM sz_house,sz_room_info,sz_user,`sz_smart_view`,`sz_smart_view_order`
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND 
+			sz_user.`user_id` = sz_smart_view.`smart_view_user_id`
+			AND
+			sz_smart_view.`smart_view_room_info_id` = sz_room_info.`room_info_id`
+			AND 
+			sz_smart_view_order.`smart_view_id` = sz_smart_view.`smart_view_id`
+			AND
+			smart_view_order_status = 0
+			AND			
+			smart_view_status = #{status}
+			AND 
+			smart_view_user_id = #{user_id} order by smart_view_time
+   </select>
+   
+   
+    <!-- 我的预订  S0010 -->
+     <select id="myReservation"  resultType="Map" parameterType="Map">
+   		 SELECT		
+		 	house_id,
+		 	house_url,
+		 	room_info_id,
+			room_info_price,
+			room_info_size,
+			sz_house.house_name,
+			house_latitude_longitude,
+			house_partner,
+			book_order_time,
+			house_label
+			
+			FROM sz_house,sz_room_info,sz_book_order
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND 
+			sz_book_order.`book_order_room_info_id` = sz_room_info.`room_info_id`
+			AND 
+			book_order_user_id = #{user_id}
+			AND
+			<if test="status==0">
+				book_order_status = #{status}
+			</if>
+			<if test="status!=0">
+				book_order_status &lt;&gt; 0
+			</if>
+    </select>
+   
+       <select id="myLeaseOrder"  resultType="Map" parameterType="Map">
+   		 SELECT		
+		 	house_id,
+		 	room_info_id,
+		 	house_url,
+			room_info_price,
+			room_info_size,
+			sz_house.house_name,
+			house_latitude_longitude,
+			house_partner,
+			understand_sign_time,
+			house_label
+			
+			FROM sz_house,sz_room_info,sz_understand_sign
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND 
+			sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id`
+			AND 
+			understand_sign_user_id = #{user_id}
+			AND
+			<if test="status==1">
+				understand_sign_status = 2
+			</if>
+			<if test="status!=1">
+				understand_sign_status &lt;&gt; 2
+			</if>
+    </select>
+   
+   <insert id="myHousingEvaluation" parameterType="Map">
+      INSERT INTO sz_hous_evaluation(hous_evaluation_user_id,hous_evaluation_house_id,hous_evaluation_comfort,hous_evaluation_surroundings,hous_evaluation_traffic,hous_evaluation_facility,hous_evaluation_total_level,hous_evaluation_contents,hous_evaluation_status,hous_evaluation_time,hous_keeper_service_attitude)
+		VALUE
+	(#{user_id},#{hous_evaluation_house_id},#{hous_evaluation_comfort},#{hous_evaluation_surroundings},#{hous_evaluation_traffic},#{hous_evaluation_facility},#{hous_evaluation_total_level},#{hous_evaluation_contents},0,now(),0)
+		   
+   </insert>
+   <select id="myHousekeeperList" resultType="Map" parameterType="Map">
+		SELECT house_keeper_id,house_keeper_name,house_keeper_url,house_keeper_mob,house_keeper_remark,house_keeper_level,house_keeper_online FROM sz_house_keeper WHERE house_keeper_status=0 AND  house_keeper_id=#{house_keeper_id}
+   </select>
+
+   <select id="myHouseInfo" resultType="String" parameterType="Map">
+		SELECT house_keeper  FROM sz_understand_sign,`sz_house`,`sz_room_info` WHERE house_id=room_info_house_id AND 
+		room_info_id=understand_sign_room_info_id AND understand_sign_status=2 AND understand_sign_user_id=#{user_id}
+   </select>
+	<!-- 生活订单  S0012 -->
+   <select id="myLifeOrder" resultType="Map" parameterType="Map">
+	(SELECT '1' AS TYPE,repair_order_id,repair_order_time,repair_order_project,repair_order_address,sz_keep_repair_data.`keep_repair_data_name` AS repair_order_project_str FROM sz_repair_order ,`sz_keep_repair_data`
+	WHERE sz_keep_repair_data.`keep_repair_data_id` = sz_repair_order.`repair_order_project` AND repair_order_status=#{status} AND repair_order_user_id=#{user_id} order by repair_order_time)
+	
+	UNION ALL 
+	
+	(SELECT '2' AS TYPE,clean_order_id AS repair_order_id,clean_order_time AS repair_order_time,clean_order_info AS repair_order_project,clean_order_address AS repair_order_address,'' as repair_order_project_str 
+	FROM sz_clean_order,sz_clean_user
+	WHERE sz_clean_order.`clean_order_user_id` = sz_clean_user.`sz_clean_user_id` 
+	AND clean_order_status=#{status} AND 
+	clean_order_room_info_id IN
+	(SELECT room_info_house_id FROM `sz_understand_sign`,`sz_room_info` 
+	WHERE sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id` 
+	AND sz_understand_sign.`understand_sign_status`=2 AND `understand_sign_user_id`=#{user_id}
+	)
+	ORDER BY clean_order_time)
+   </select>
+   <select id="getPersonalInformation" resultType="Map" parameterType="Map">
+	SELECT '1' AS card_type,user_real_name,user_industry,user_company_name,user_company_address,user_education,user_id_card,user_schoole,
+	user_admission_time,user_graduation_time,user_education_type,user_mob,user_img,user_nickname,user_core
+	 FROM sz_user WHERE user_id=#{user_id}
+   </select>
+   <insert id="myCleaningEvaluation" parameterType="Map">
+     INSERT INTO  sz_clean_evaluation(clean_evaluation_user_id,clean_evaluation_contents,clean_evaluation_level,clean_evaluation_time,clean_evaluation_order_id)
+		VALUE(#{user_id},#{clean_evaluation_contents},#{clean_evaluation_level},NOW(),#{clean_order_id})		   
+   </insert>
+
+
+    <insert id="myMaintenanceEvaluation" parameterType="Map">
+		INSERT INTO  sz_repair_appraise(repair_appraise_user_id,repair_appraise_order_id,repair_appraise_contents,repair_appraise_level)
+		VALUE(#{user_id},#{repair_appraise_order_id},#{repair_appraise_contents},#{repair_appraise_level})
+   </insert>
+   
+   
+   <select id="myCouponList" resultType="Map" parameterType="Map">
+		SELECT user_redeem_id,IF(user_redeem_usetime IS NULL,'',user_redeem_usetime) AS user_redeem_usetime, redeem_url,redeem_name,redeem_denomination,redeem_type,redeem_on_time,redeem_detail
+		FROM sz_redeem,`sz_user_redeem`
+		WHERE user_redeem_redeem_id = redeem_id AND user_redeem_user_id=#{user_id}
+		<if test="status!=null and status!=''">
+			AND user_redeem_status = #{status}
+		</if>
+
+   </select>
+   
+   
+   
+   
+        <select id="housingEvaluationList"  resultType="Map" parameterType="Map">
+   		 SELECT		
+		 	house_id,
+		 	house_url,
+		 	room_info_id,
+			room_info_price,
+			room_info_size,
+			sz_house.house_name,
+			house_latitude_longitude,
+			house_partner,
+			understand_sign_time,
+			understand_sign_user_id as user_id,
+			house_label
+			
+			FROM sz_house,sz_room_info,`sz_understand_sign`
+			
+			WHERE 
+			sz_room_info.room_info_house_id = sz_house.`house_id`   
+			AND 
+			sz_understand_sign.understand_sign_room_info_id = sz_room_info.`room_info_id`
+			AND 
+			understand_sign_user_id = #{user_id}
+	
+			AND	understand_sign_status = 2
+
+    </select>
+    
+    
+    <select id="cleanlinessEvaluationList"  resultType="Map" parameterType="Map">
+		SELECT * FROM 
+		(SELECT clean_order_id,clean_order_time,clean_order_info,sz_clean_user_name,sz_clean_user_mobile,sz_clean_user_url,clean_order_address ,
+		IF(clean_evaluation_contents IS NULL,'',clean_evaluation_contents) AS clean_evaluation_contents,IF(clean_evaluation_level IS NULL,'',clean_evaluation_level) AS clean_evaluation_level
+		FROM sz_clean_order LEFT JOIN sz_clean_user ON  sz_clean_order.`clean_order_user_id` = sz_clean_user.`sz_clean_user_id` 
+		LEFT JOIN  sz_clean_evaluation ON clean_evaluation_order_id = clean_order_id
+		WHERE clean_order_status = 0 and clean_order_room_info_id IN
+	(SELECT room_info_house_id FROM `sz_understand_sign`,`sz_room_info` 
+	WHERE sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id` 
+	AND sz_understand_sign.`understand_sign_status`=2 AND `understand_sign_user_id`=#{user_id})) s
+		<if test="status==0">
+				WHERE clean_evaluation_level&lt;&gt;''
+		</if>
+		<if test="status==1">
+				WHERE clean_evaluation_level=''
+		</if>
+    </select>
+   
+   
+    <select id="maintenanceEvaluationList"  resultType="Map" parameterType="Map">
+	SELECT * FROM	
+		(SELECT repair_order_id,repair_order_time,repair_order_info,keep_repair_data_name AS 'repair_order_project',repair_order_address ,sz_repair_user_name AS user_nickname,sz_repair_user_mobile AS user_mob,sz_repair_user_url AS user_img,
+		IF(repair_appraise_contents IS NULL,'',repair_appraise_contents) AS repair_appraise_contents,IF(repair_appraise_level IS NULL,'',repair_appraise_level) AS repair_appraise_level
+		FROM sz_repair_order LEFT JOIN sz_repair_user ON sz_repair_user_id=repair_user_id
+		LEFT JOIN sz_repair_appraise ON repair_appraise_order_id = repair_order_id
+		LEFT JOIN sz_keep_repair_data ON keep_repair_data_id = repair_order_project
+		WHERE repair_order_status=0 AND repair_order_user_id=#{user_id}) s
+		<if test="status==0">
+				WHERE repair_appraise_level&lt;&gt;''
+		</if>
+		<if test="status==1">
+				WHERE repair_appraise_level=''
+		</if>
+    </select>
+    
+    <select id="huodebaojieliebiaopingjia"  resultType="Map" parameterType="Map">
+		SELECT clean_evaluation_contents ,clean_evaluation_level FROM sz_clean_evaluation 
+		WHERE clean_evaluation_user_id=#{user_id} and clean_evaluation_order_id=#{order_id}
+    </select>
+    
+    <select id="weixiujieliebiaopingjia"  resultType="Map" parameterType="Map">
+		SELECT repair_appraise_contents ,repair_appraise_level FROM sz_repair_appraise 
+		WHERE repair_appraise_user_id=#{user_id} and repair_appraise_order_id=#{order_id}
+    </select>
+    <!-- 我的会员  S0017 -->
+    <select id="myMembers"  resultType="Map" parameterType="Map">		
+		SELECT user_core,user_total_core,user_custom FROM sz_user WHERE user_id=#{user_id}
+    </select>
+        <!-- 我的钱包  S0021 -->
+    <select id="myWallet"  resultType="Map" parameterType="Map">		
+		SELECT user_account,user_yajin_amount AS smart_view_order_price,IF(user_yajin_amount=0,0,1) AS is_view_order 
+		FROM `sz_user`
+		WHERE user_id=#{user_id}
+    </select>
+            <!--我的合同  S0024 -->
+    <select id="myContract"  resultType="Map" parameterType="Map">		
+
+		SELECT  sz_ht.id,house_name,house_url,house_keeper,CONCAT(DATE_FORMAT(ht_time,'%Y-%m-%d'),' 至 ',DATE_FORMAT(maturity_time,'%Y-%m-%d')) AS lease_period,money,pay,
+		IF(maturity_time&lt;NOW(),0,1) AS ht_status
+		FROM sz_ht,`sz_house`
+		WHERE sz_house.`house_code` = sz_ht.`house_code` AND u_id = #{user_id}
+		
+		
+    </select>
+     <!--获取合同详情  S0054 -->
+    <select id="myContractDetail"  resultType="Map" parameterType="Map">		
+		SELECT  sz_ht.id,house_name,house_url,house_keeper,lease_period,money,pay,card,mobile,
+		IF(maturity_time&lt;NOW(),0,1) AS ht_status
+		FROM sz_ht,`sz_house`
+		WHERE sz_house.`house_code` = sz_ht.`house_code` AND u_id = #{user_id} AND sz_ht.id=#{id}
+    </select>
+    
+    <!-- 查询用户房屋评价内容 -->
+    <select id="searchHousEvaluation" resultType="Map" parameterType="Map">
+		    
+		SELECT * FROM sz_hous_evaluation WHERE hous_evaluation_user_id=#{user_id} AND hous_evaluation_house_id = #{house_id}
+		    
+    </select>
+    
+    
+    
+</mapper>

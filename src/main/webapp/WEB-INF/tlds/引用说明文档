@@ -1,0 +1,7 @@
+1.引用
+<%@ taglib prefix="cc" uri="/tags/con" %>
+2.页面调用
+<cc:enum className="TableStatus" value="${ table.tabStatus }" />
+className:枚举类名
+value:值
+

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+				http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+    
+  
+  <bean id="taskController" class="com.hz.app.user.controller.Task">
+    </bean>
+    
+    
+	<bean id="generateLoanCountTask" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="taskController" />
+		<property name="targetMethod" value="doXinyon" />
+	</bean>
+	
+	 
+	
+		<!--每日凌晨1点触发   -->
+	<bean id="generateLoanCountTaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="generateLoanCountTask" />
+		<property name="cronExpression" value="0 0 1 * * ? *" /> 
+	<!-- 	<property name="cronExpression" value="0 0/1 8-20 * * ?" /> -->
+	</bean>
+	
+	
+	<!--总管理类 如果将lazy-init='false'那么容器启动就会执行调度程序   -->
+	 <bean id="schedulerFactoryBean" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+ 				<ref bean="generateLoanCountTaskTrigger" />
+			</list>
+		</property>
+	</bean> 
+</beans> 

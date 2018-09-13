@@ -1,0 +1,98 @@
+@charset "utf-8";
+/* CSS Document */
+/*登录*/
+.login-l{ padding:50px 0; overflow:hidden;}
+.login-r{ width:302px; padding:50px 90px 20px 90px; overflow:hidden;}
+.login-r h3{ font-weight:normal; font-size:20px; color:#ff8f12; line-height:50px; height:50px; padding-top:10px;}
+.login-ct1{ line-height:30px; font-size:14px; color:#989898; position:relative; padding-left:22px; overflow:hidden; width:auto; margin-top:10px;}
+.login-ct1 input{ position:absolute; top:10px; left:2px;}
+.login-ct1 a{ color:#989898; float:right;}
+.login-ct1 a:hover{ color:#ff9833;}
+.login-r-span{ font-size:14px; height:30px; line-height:30px; float:right; color:#989898;}
+.login-r-span a{ color:#ff9833; }
+.login-r-span a:hover{text-decoration:underline;}
+.ts-cont1{ line-height:20px; color:#ed1f09; font-size:14px; text-align:left; margin-top:0px;}
+
+/*注册*/
+.zhece-tit{ width:100%; height:1px; background:#e6e6e6; margin-top:40px; position:relative;}
+.zhece-tit span{ background:#fff; color:#989898; height:30px; display:block;padding:0 30px; font-size:18px; line-height:30px; position:absolute; top:-15px; left:28px;}
+.zc-box{ padding:32px 30px; height:100%; overflow:hidden; }
+.zc-top{ width:934px; height:42px; background:url(../images/zc-bg1.png) center no-repeat; margin-bottom:62px;}
+.zc-top2{ width:934px; height:42px; background:url(../images/zc-bg2.png) center no-repeat; margin-bottom:62px;}
+.zc-top3{ width:934px; height:42px; background:url(../images/zc-bg3.png) center no-repeat; margin-bottom:62px;}
+.zc-l{ width:400px; padding:0 94px 0 30px; border-right:1px solid #e6e6e6; margin-bottom:100px;}
+.zc-cont{ font-size:16px; color:#585858;  float:left; width:90px; text-align:right; height:42px; line-height:42px;}
+.zc-cont2{ font-size:16px; color:#585858;  float:left; margin-right:10px;width:130px; text-align:right; height:42px; line-height:42px;}
+.zc-l .no1{ margin-bottom:8px;}
+.zc-l .no2{margin:12px 0 8px 0;}
+.zc-l .no3{margin:42px 0 0px 0;}
+.zc-l .no4{margin:16px 0 8px 0;}
+.zc-l .ptl{ padding-left:100px;}
+.zc-input-box{ width:300px; height:40px; margin-left:8px; display:block; border:1px solid #e6e6e6; line-height:40px; border-radius:3px; margin-top:12px; margin-bottom:8px; float:left;}
+.zc-input1{ width:180px; height:38px; line-height:38px; float:left; padding-left:10px;}
+.zc-input2{ width:108px; height:40px; line-height:40px; float:right; color:#189ed8; background:#fff; border-left:1px solid #e6e6e6; text-align:center; cursor:pointer;}
+.zc-l-b{ width:302px; margin-top:60px;}
+.zc-l-xy{ color:#189ed8; font-size:14px; line-height:18px; padding-left:18px; position:relative;}
+.zc-l-xy input{ position:absolute; top:4px; left:0;}
+.zc-r{ width:270px; height:229px; background:url(../images/zc-r-bg.png) center no-repeat; padding:24px 0 0 74px;}
+
+
+
+/*密码强度*/
+.ywz_zhuce_xiaoxiaobao{ float:left; width:226px; }
+.ywz_zhuce_hongxian{ float:left; background:#ff8f12; width:60px; height:4px; margin-top:5px; margin-left:5px; _margin-top:0px;_height:2px; font-size:0px;}
+.ywz_zhuce_hongxian2{ float:left; background: #ff8f12; width:60px; height:4px; margin-top:5px; margin-left:5px; _margin-top:0px;_height:2px; font-size:0px;}
+.ywz_zhuce_hongxian3{ float:left; background: #ff8f12; width:60px; height:4px; margin-top:5px; margin-left:5px; _margin-top:0px;_height:2px; font-size:0px;}
+.ywz_zhuce_huixian{ float:left; background:#eaeaea; width:60px; height:4px; margin-top:5px; _margin-top:0px; margin-left:5px; _height:2px;font-size:0px;}
+.ywz_zhuce_hongxianwenzi{ float:left; width:60px; margin-left:5px; text-align:center; color:#b0adad; font-size:12px; margin-top:-8px; }
+
+
+/*注册成功*/
+.zc-success{ margin:120px auto; width:370px; }
+.zc-suc{background:url(../images/zc-icon.png) left center no-repeat; height:73px;}
+.zc-suc p{ font-size:24px; line-height:30px; color:#585858; padding-left:85px;}
+.zc-suc span{ font-size:16px; line-height:24px; color:#989898; padding-left:85px; margin-top:16px; float:left; }
+.zc-suc-cor{ color:#ff8f12; margin-right:8px;}
+.zc-suc a{ color:#ff8f12; line-height:24px; font-size:16px; padding-left:10px;}
+.zc-suc a:hover{ text-decoration:underline;}
+
+/*忘记密码*/
+.fgpwd-1{ width:400px; margin:0 auto;}
+.forgetpwd-top1{ width:934px; height:42px; background:url(../images/forgetpwd-1.png) center no-repeat; margin-bottom:62px;}
+.forgetpwd-top2{ width:934px; height:42px; background:url(../images/forgetpwd-2.png) center no-repeat; margin-bottom:62px;}
+.forgetpwd-top3{ width:934px; height:42px; background:url(../images/forgetpwd-3.png) center no-repeat; margin-bottom:62px;}
+.fgpwd-1 .no1{ margin-bottom:8px;}
+.fgpwd-1 .no2{margin:12px 0 8px 0;}
+.fgpwd-1 .ptl{ padding-left:100px;}
+
+
+/*信息同步*/
+.infm-input{width:128px; height:40px; display:block; border:1px solid #e6e6e6; padding-left:10px; line-height:40px; border-radius:3px; margin-top:12px; margin-bottom:8px; float:left;}
+.infm-img{ margin:12px 8px 0 6px;}
+.infm-another{ font-size:14px; color:#189ed8; line-height:60px;}
+.infm-tb-r{ width:365px; padding:74px 20px 0 24px;}
+.infm-tb-r h3{ font-weight:normal; font-size:18px; color:#585858; line-height:30px;}
+.infm-tb-r p{ color:#989898; line-height:26px; text-indent:2em; padding:20px 0 30px 0 ; border-bottom:1px dashed #e5e5e5;}
+.infm-tb-r span{ font-size:16px; color:#989898; line-height:60px;}
+.infm-tb-r span em{ color:#ff8f12; font-size:24px;}
+.infm-top1{width:934px; height:42px; background:url(../images/xinxitb-bg1.png) center no-repeat; margin-bottom:62px;}
+.infm-top2{width:934px; height:42px; background:url(../images/xinxitb-bg2.png) center no-repeat; margin-bottom:30px;}
+
+/*身份验证*/
+.id-yz{ border:1px solid #e6e6e6; padding:10px; overflow:hidden;}
+.id-yz h3{ width:auto; height:40px; line-height:40px; background:#f3fafd; color:#189ed8; font-size:18px; padding-left:14px; font-weight:normal;}
+.id-infm{ width:100%;}
+.id-infm ul{ width:100%; margin:20px 0; overflow:hidden;}
+.id-infm ul li{ width:50%; float:left; color:#585858; text-align:center; line-height:40px;}
+.id-infm ul li p{  float:left;}
+.id-infm ul li p img{  vertical-align:middle;}
+.id-infm ul li p.no1{width:24%; text-align:right;}
+.id-infm ul li p.no2{width:76%; text-align:left;}
+.infm-btn{ width:148px; height:38px; font-family:"Microsoft YaHei" ;display:block; background:#189ed8;border:1px solid #1892c7; border-radius:3px; margin-top:8px; z-index:4; cursor:pointer; font-size:16px; text-align:center; line-height:38px; color:#fff; margin:80px auto;}
+.infm-btn:hover{ background:#ff8f12; color:#fff; border:1px solid #ff8400; transition:all 0.2s ease-in 0s; }
+
+/*crm未注册*/
+.id-input{ float:left; line-height:42px; margin:0px 10px 0 0;}
+.id-input2{ width:154px; height:40px;border:1px solid #e6e6e6; padding-left:10px; line-height:40px; border-radius:3px;}
+.login-btn1{ width:250px; height:46px; font-family:"Microsoft YaHei" ;display:block; background:#189ed8;border:1px solid #1892c7; border-radius:3px; margin-top:8px; z-index:4; cursor:pointer; font-size:20px; text-align:center; line-height:45px; color:#fff; margin-right:10px;}
+.login-btn1:hover{ background:#ff8f12; color:#fff; border:1px solid #ff8400; transition:all 0.2s ease-in 0s; }

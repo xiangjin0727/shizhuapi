@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+           				   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+           				   http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+           				   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+						   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+						   http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
+	<!-- 系统配置 开始 -->
+
+	<!-- 读取属性文件 -->
+	<context:property-placeholder ignore-unresolvable="true" location="classpath*:/config.properties" />	
+
+   <!-- Druid 连接池 -->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"> 
+	    <!-- 基本属性 url、user、password -->
+	    <property name="url" value="${jdbc.url}" />
+	    <property name="username" value="${jdbc.username}" />
+	    <property name="password" value="${jdbc.password}" />
+        <!-- 配置初始化大小、最小、最大 -->
+        <property name="initialSize" value="1" />
+        <property name="minIdle" value="1" /> 
+        <property name="maxActive" value="20" />  
+        <!-- 配置获取连接等待超时的时间 -->
+        <property name="maxWait" value="60000" />
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000" />
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="300000" />
+        <!-- 配置监控统计拦截的filters -->
+        <property name="filters" value="stat" /> 
+    </bean>
+
+	<!-- 配置mybatis -->
+	<bean id="ysqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+		<!-- mapper扫描 -->
+		<property name="mapperLocations" value="classpath:mybatis/*/*Mapper.xml"></property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.hz.app.**.dao" />
+		<property name="sqlSessionFactoryBeanName" value="ysqlSessionFactory"/>
+	</bean>
+
+	<bean name="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<constructor-arg ref="transactionManager"></constructor-arg>
+	</bean>
+
+
+
+    <!-- 使用AspectJ方式配置AOP -->
+    <aop:aspectj-autoproxy/>
+    <!-- 配置事务传播特性（通知）-->
+    <aop:config   proxy-target-class="true">
+        <!-- 切面 -->
+        <aop:pointcut id="servicePointcut"
+                      expression="execution(* com.hz.util.Test1.*(..))" />
+        <!-- 事务处理方法  order="1"-->
+        <aop:advisor pointcut-ref="servicePointcut" advice-ref="txAdvice"/>
+    </aop:config>
+
+	<!-- 事务管理 配置 -->
+	<tx:annotation-driven transaction-manager="transactionManager"
+		order="0" />
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<!-- 以下方法为只读事务 -->
+			<tx:method name="get*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="list*" read-only="true" />
+			<tx:method name="excute*" read-only="true" />
+
+			<!-- 所有可写的方法都加入事务管理 -->
+			<tx:method name="*" propagation="REQUIRED" rollback-for="Exception"/>
+			<!-- 事务传播行为类型 REQUIRED 如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。这是最常见的选择。 
+				SUPPORTS 支持当前事务，如果当前没有事务，就以非事务方式执行。 MANDATORY 使用当前的事务，如果当前没有事务，就抛出异常。 REQUIRES_NEW 
+				新建事务，如果当前存在事务，把当前事务挂起。 NOT_SUPPORTED 以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。 NEVER 
+				以非事务方式执行，如果当前存在事务，则抛出异常。 NESTED 如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与PROPAGATION_REQUIRED类似的操作。 -->
+		</tx:attributes>
+	</tx:advice>
+	<aop:aspectj-autoproxy/>
+	<aop:config>
+		<!-- 创建自动代理, 用于拦截平台中所有的业务类方法 -->
+		<aop:advisor pointcut="execution(* com.hz.app.*.*(..))||execution(* com.hz..*Scheduler*(..))"
+			advice-ref="txAdvice" />
+	</aop:config>
+
+	<!-- 缓存管理器配置 -->
+	<bean id="cacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="cacheManagerName" value="mainCacheManager"></property>
+		<property name="configLocation" value="classpath:${ehcache.configFile}"></property>
+		<property name="shared" value="true"></property>
+	</bean>
+
+	 <!-- 导入定时器配置 -->
+	 <!-- <import resource="classpath:application-quartz.xml"/> -->
+</beans>

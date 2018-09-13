@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.user.dao.UserCouponDao">
+	<!-- 获取积分兑换列表 S0018 -->
+   <select id="getFractionalTransactionList" resultType="Map">
+      SELECT redeem_url,redeem_name,redeem_core,redeem_id,redeem_detail FROM sz_redeem WHERE redeem_status = 0 AND redeem_num&gt;0 
+   </select>
+   <!-- 积分兑换操作 S0019 -->
+   <insert id="convertibilityOperation" parameterType="Map">	
+		INSERT INTO sz_user_redeem (user_redeem_user_id,user_redeem_redeem_id,user_redeem_time,user_redeem_status)
+		VALUE(#{user_id},#{redeem_id},now(),0) 
+   </insert>
+   <!-- 获取积分兑换记录 S0020 -->
+   <select id="getConvertibilityRecord" resultType="Map" parameterType="Map">
+      SELECT redeem_url,redeem_name,redeem_core,redeem_id,user_redeem_status,user_redeem_time FROM sz_redeem,sz_user_redeem 
+      WHERE user_redeem_id = redeem_id AND user_redeem_user_id = #{user_id}
+  </select>
+  <!-- 更新用户积分S0019 -->
+	<update id="updateUserCore" parameterType="Map">	
+		UPDATE sz_user SET user_core = user_core - (SELECT redeem_core FROM sz_redeem WHERE redeem_id=#{redeem_id}) 
+		WHERE user_id=#{user_id}
+	</update>
+	   <!-- 获取积分兑换记录 S0020 -->
+   <select id="searchUserCore" resultType="Map" parameterType="Map">
+		SELECT user_core,user_total_core FROM sz_user WHERE user_id = #{user_id}
+  </select>
+  	   <!--获取生日特权房租抵用券 S0052 -->
+   <select id="getBirthdayVoucher" resultType="Map" parameterType="Map">
+		SELECT redeem_name,redeem_denomination ,user_redeem_id,user_redeem_status,DATE_FORMAT(DATE_ADD(user_redeem_time, INTERVAL 3 MONTH),'%Y-%m-%d') AS term_of_validity FROM sz_user_redeem,`sz_redeem`
+		WHERE redeem_id = user_redeem_redeem_id
+		AND user_redeem_user_id=#{user_id} AND redeem_type = 2
+  </select>
+
+</mapper>

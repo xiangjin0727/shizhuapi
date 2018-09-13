@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+      http://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context
+      http://www.springframework.org/schema/context/spring-context.xsd">
+ 
+    <!--扫描指定包-->
+    <context:component-scan base-package="com.lnjecit.chapter4.user"/>
+ 
+    <!--配置代理-->
+    <bean id="userServiceProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <!--需要代理的接口-->
+        <property name="interfaces" value="com.hz.app.user.service.impl.UserMyInformationService"/>
+        <!--接口实现类-->
+        <property name="target" ref="UserMyInformationServiceImpl"/>
+        <!--拦截器名称（即增强类名称）-->
+        <property name="interceptorNames">
+            <list>
+                <value>userAroundAdvice</value>
+            </list>
+        </property>
+ 
+    </bean>
+ 
+</beans>

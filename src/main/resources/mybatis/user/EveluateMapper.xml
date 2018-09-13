@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.evaluate.dao.EveluateDao">
+	<!-- 投诉建议列表 S0044 -->
+  <select id="doComplaintProposalList" resultType="Map" parameterType="Map">
+		SELECT user_nickname,user_img,user_suggestions_id,user_suggestions_contents,user_suggestions_mob,
+		DATE_FORMAT(user_suggestions_time,'%Y-%m-%d %H:%i:%S') AS user_suggestions_time,user_suggestions_type,user_suggestions_reply 
+		FROM sz_user_suggestions,sz_user
+		WHERE user_id = user_suggestions_user_id AND user_suggestions_status = 0 AND user_suggestions_user_id=#{user_id}
+		ORDER BY user_suggestions_time DESC
+  </select>
+  <!-- 投诉建议 S0028 -->
+  <insert id="doComplaintProposal" parameterType="Map">	
+	INSERT INTO  sz_user_suggestions(user_suggestions_user_id,user_suggestions_contents,user_suggestions_mob,user_suggestions_time,user_suggestions_type,user_suggestions_status)
+	VALUE(#{user_id},#{user_suggestions_contents},#{user_suggestions_mob},NOW(),#{user_suggestions_type},0)
+  </insert>
+  	<!-- 可维修项目  S0068 -->
+  <select id="getRepairableProject" resultType="Map" parameterType="Map">
+	SELECT keep_repair_data_id, keep_repair_data_name FROM sz_keep_repair_data WHERE keep_repair_data_status = 0
+  </select>
+  
+</mapper>

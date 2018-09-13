@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hz.app.order.dao.OrderDao">
+	<!-- 智享维修-报修 S0027 -->
+  <insert id="doApplyForRepair" parameterType="Map">	
+    <selectKey resultType="java.lang.Long" order="AFTER" keyProperty="repair_order_id">
+			SELECT LAST_INSERT_ID() AS repair_order_id
+	</selectKey>
+	INSERT INTO  `sz_repair_order`(repair_order_user_id,repair_order_time,repair_order_info,repair_order_code,repair_order_status,repair_order_project,repair_order_address)
+	VALUE(#{user_id},NOW(),#{repair_order_info},REPLACE(UUID(),'-',''),1,#{repair_order_project},#{repair_order_address})
+  </insert>
+  <!-- 增加用户积分 -->
+  <update id="updateUserCore">
+   UPDATE sz_user SET user_core=user_core+#{core},user_total_core=user_total_core+#{core} WHERE user_id=#{user_id}
+  </update>
+    <!-- 用户信用分变更 -->
+  <update id="updateUserXinYongCore">
+   UPDATE sz_user SET user_xinyong_score=user_xinyong_score+#{user_xinyong_score} WHERE user_id=#{user_id}
+  </update>
+  <!-- 待缴账单 S0025 -->
+  <select id="searchUnpaidUserBill" parameterType="Map" resultType="Map">
+	SELECT room_info_id,CONCAT('第',user_bill_num,'期','  房租账单') AS user_bill_num,user_bill_method,user_bill_id,user_bill_pay_day,user_bill_pay_num ,house_name,house_url,user_bill_cycle
+	FROM sz_user_bill_info LEFT JOIN `sz_understand_sign` ON sz_user_bill_info.`user_bill_pay_code` = sz_understand_sign.`understand_sign_order_code`
+	LEFT JOIN `sz_room_info` ON sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id`
+	LEFT JOIN sz_house ON sz_room_info.`room_info_house_id` = sz_house.`house_id`
+	,(
+	
+	SELECT user_bill_pay_code,MIN(user_bill_num) num
+	FROM sz_user_bill_info WHERE sz_user_bill_info.user_id=#{user_id}  AND user_bill_method = 1 GROUP BY 
+	user_bill_pay_code) q
+	WHERE sz_user_bill_info.user_id=#{user_id} AND 	 user_bill_method = 1  AND sz_user_bill_info.user_bill_pay_code = q.user_bill_pay_code
+	AND sz_user_bill_info.`user_bill_num` = q.num
+
+
+  </select>
+    <!-- 账单明细 S0023 -->
+  <select id="getBillingDetails" parameterType="Map" resultType="Map">
+	SELECT IF(user_bill_flow_type=0,'账户支出','账户收入') AS user_bill_num,user_bill_flow_type+1 AS is_spend, 
+	user_bill_flow_time AS user_bill_pay_day, user_bill_flow_money AS user_bill_pay_num,user_bill_flow_no AS understand_sign_order_code
+	FROM sz_user_bill_flow 
+	WHERE user_id=#{user_id} ORDER BY user_bill_flow_time DESC	 
+  </select>
+      <!-- 获取账单详情 S0056 -->
+  <select id="getDetailsOfTheBill" parameterType="Map" resultType="Map">
+		SELECT user_bill_pay_day,house_name,room_info_price,house_url,room_info_size,user_bill_pay_num,understand_sign_pay_type,understand_sign_order_code,user_bill_num FROM `sz_house`,`sz_room_info`,`sz_understand_sign`,`sz_user_bill_info`
+		WHERE sz_user_bill_info.`user_bill_pay_code`=sz_understand_sign.`understand_sign_order_code`
+		AND sz_understand_sign.`understand_sign_room_info_id` = sz_room_info.`room_info_id`
+		AND sz_room_info.`room_info_house_id` = sz_house.`house_id`
+		AND user_bill_id = #{user_bill_id}
+  </select>
+  
+      <!--  获取合同下房租账单列表 S0055 -->
+  <select id="getBillList" parameterType="Map" resultType="Map">
+	SELECT user_bill_num AS bnum,CONCAT('第',user_bill_num,'期','  房租账单') AS user_bill_num,IF(user_bill_method=1,'2',user_bill_method) AS user_bill_method,user_bill_pay_day,user_bill_pay_num,user_bill_cycle,user_bill_id
+	FROM sz_user_bill_info 
+	WHERE sz_user_bill_info.user_id=#{user_id} AND user_ht_id=#{ht_id} ORDER BY user_bill_method DESC,bnum ASC
+  </select>
+  
+</mapper>

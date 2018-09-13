@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName"
+	xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       					   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+           				   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+           				   http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+           				   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+						   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+						   http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd" 
+						 >
+	<!-- 该 BeanPostProcessor 将自动对标注 @Autowired 的 Bean 进行注入 -->     
+  <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>  
+
+
+	<context:component-scan base-package="com.hz"><!-- base-package
+			如果多个，用“,”分隔 -->
+		<context:exclude-filter type="annotation"
+								expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+
+	<!-- database配置文件导入 -->
+	<import resource="classpath*:spring/application-datasource.xml"/>
+	<!-- quartz配置文件导入 -->
+	<import resource="classpath*:spring/application-quartz.xml"/>
+	<!-- redis配置文件导入 -->
+	<import resource="classpath*:spring/application-redis.xml"/>			
+	<!-- 国际化支持 -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename">
+			<value>messageResource</value>
+		</property>
+	</bean>
+
+	<bean id="springUtil" class="com.hz.core.framework.spring.SpringUtils" />
+	
+	
+	
+	
+	
+	
+	<!--<bean id="aspcejHandler" class="com.tgb.aop.AspceJAdvice"/>-->
+	<bean id="xmlHandler" class="com.hz.util.XMLAdvice" />
+	<aop:config proxy-target-class="true">
+		<aop:aspect id="aspect" ref="xmlHandler">
+			<aop:pointcut id="pointUserMgr" expression="execution(* com.hz.app.user.controller.*.*(..))"/>
+			
+			<aop:before method="doBefore"  pointcut-ref="pointUserMgr"/>
+			<aop:after method="doAfter"  pointcut-ref="pointUserMgr"/>
+			<aop:around method="doAround"  pointcut-ref="pointUserMgr"/>
+			<aop:after-returning method="doReturn"  pointcut-ref="pointUserMgr"/>
+			<aop:after-throwing method="doThrowing" throwing="ex" pointcut-ref="pointUserMgr"/>
+			
+		</aop:aspect>
+	</aop:config>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+ 	<!-- 加载缓存类 -->
+	<!--<bean id="initparambean" class="com.hz.core.framework.redis.InitRedisByParam" init-method="initparam"></bean>
+	 -->
+	<!-- 加载自定义配置文件 -->
+	<bean id="appSystemProperties" class="com.hz.core.util.PropertiesLoad">
+		<property name="locations">
+			<array>
+				<value>classpath:app_system.properties</value>
+			</array>
+		</property>
+		<property name="fileEncoding" value="UTF-8"></property>
+	</bean>
+</beans>
